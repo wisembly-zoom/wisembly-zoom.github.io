@@ -11,24 +11,19 @@
         body {
             padding-top: 50px;
         }
+        .container {
+            color: #fff;
+            font-size: 20px;
+            line-height: 50px;
+        }
+        .u-hidden {
+            display: none !important;
+        }
     </style>
 
-    <nav id="nav-tool"class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">MyMeetingApp</a>
-            </div>
-            <div id="navbar">
-                <form class="navbar-form navbar-right" id="meeting_form">
-                    <div class="form-group">
-                        <input type="text" name="display_name" id="display_name" value="" placeholder="Name" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" name="meeting_number" id="meeting_number" value="" placeholder="Meeting Number" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="join_meeting">Join</button>
-                </form>
-            </div><!--/.navbar-collapse -->
+    <nav id="navbar"class="navbar navbar-inverse navbar-fixed-top">
+        <div id="container" class="container">
+            Loading your Zoom meeting...
         </div>
     </nav>
 
@@ -39,47 +34,13 @@
     <script src="lib/redux-thunk.min.js"></script>
     <script src="lib/jquery.min.js"></script>
     <script src="lib/lodash.min.js"></script>
+    <script src="lib/urijs.min.js"></script>
+
     <script src="lib/av/js_media.js"></script>
 
     <script src="https://source.zoom.us/zoom-meeting-1.3.0.min.js"></script>
+
+    <script src="js/preload.js"></script>
     <script src="js/index.js"></script>
-
-    <script>
-        //pre load wasm when user type meeting number. it can save time when use joining meeting.
-        function requestWasmFunc(url) {
-            var xmlhttp;
-            if (window.ActiveXObject) xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-            else xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    try {
-                        console.log('pre load wasm success:', url);
-                    } catch (e) {
-                        console.warn('pre load wasm fail:', url);
-                    }
-                }
-            };
-
-            xmlhttp.open("GET", url, true);
-            xmlhttp.send();
-        }
-
-        var userAgent = navigator.userAgent.toLowerCase();
-        var isOpera = /opera|opr\/[\d]+/.test(userAgent);
-        var isIE = !isOpera && /(msie|trident)/.test(userAgent);
-
-
-        var isSupportAv = true;
-        if (isSupportAv && !isIE) {
-            var fetchAudioUrl = 'lib/av/audio.encode.wasm';
-            var fetchVideoUrl = 'lib/av/video.decode.wasm';
-            requestWasmFunc(fetchAudioUrl);
-            requestWasmFunc(fetchVideoUrl);
-        }
-
-        var fetchSharingUrl = 'lib/av/sharing.wasm';
-        requestWasmFunc(fetchSharingUrl);
-    </script>
 </body>
 </html>

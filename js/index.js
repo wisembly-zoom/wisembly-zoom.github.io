@@ -1,64 +1,71 @@
-(function(){
+(function ($, URI) {
 
-    var API_KEY = 'grgLoiy-SBu_PdgZyi7ihQ';
+  var leaveUrl = 'https://wisembly.com/produit/reunions-a-distance.html';
 
-    /**
-     * NEVER PUT YOUR ACTUAL API SECRET IN CLIENT SIDE CODE, THIS IS JUST FOR QUICK PROTOTYPING
-     * The below generateSignature should be done server side as not to expose your api secret in public
-     * You can find an eaxmple in PHP here: https://gist.github.com/joshuawoodward/7574df3df9a089e2663582a2cf9f188b
-     */
-    var API_SECRET = 'iLjooPXOtvvWBnypVBBNbTTZrVyDqjqipruT';
+  var apiEndpoints = {
+    prod: 'https://api.wisembly.com/core/zoom',
+    prp: 'https://prpapi.wisembly.com/core/zoom',
+    dev: 'http://api.wisembly.biz/app_dev.php/core/zoom'
+  };
 
-    document.getElementById('join_meeting').addEventListener('click', function(e){
+  var uri = new URI(window.location);
+  var search = uri.search(true);
 
-        e.preventDefault();
+  if (!search.meeting) {
+    document.getElementById('container').innerText = 'An error occured. No meeting number given.';
+    return;
+  }
 
-        if(!this.form.checkValidity()){
-            alert("Enter Name and Meeting Number");
-            return false;
-        }
+  var meetingNumber = search.meeting;
+  var role = search.role || 0;
+  var userName = search.name || 'anonymous_' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
-        var meetConfig = {
-          apiKey: API_KEY,
-          apiSecret: API_SECRET,
-          meetingNumber: parseInt(document.getElementById('meeting_number').value),
-          userName: document.getElementById('display_name').value,
-          passwd: "",
-          leaveUrl: "https://zoom.us",
-          role: 1
-        };
+  var apiEndpoint = apiEndpoints[search.env || 'prod'];
 
+  $.post(apiEndpoint, {
+      number: meetingNumber,
+      role: search.role || 0
+    })
+    .success(function (data) {
+      if (!data.success) {
+        document.getElementById('container').innerText = 'An error occured while trying to connect.';
+        return;
+      }
 
-        var signature = ZoomMtg.generateSignature({
-            meetingNumber: meetConfig.meetingNumber,
-            apiKey: meetConfig.apiKey,
-            apiSecret: meetConfig.apiSecret,
-            role: meetConfig.role,
-            success: function(res){
-                console.log(res.result);
-            }
-        });
+      document.getElementById('container').innerText = 'Meeting found! Loading Zoom web player...';
 
-        ZoomMtg.init({
-            leaveUrl: 'http://www.zoom.us',
-            isSupportAV: true,
-            success: function () {
-                ZoomMtg.join(
-                    {
-                        meetingNumber: meetConfig.meetingNumber,
-                        userName: meetConfig.userName,
-                        signature: signature,
-                        apiKey: meetConfig.apiKey,
-                        success: function(res){
-                            console.log('join meeting success');
-                            document.getElementById('nav-tool').style.display = 'none';
-                        }
-                    }
-                );
+      var apiKey = data.success.data.api_key;
+      var signature = data.success.data.signature;
 
-            }
-        });
+      ZoomMtg.init({
+          leaveUrl: leaveUrl,
+          isSupportAV: true,
+          success: function () {
+            ZoomMtg.join({
+              meetingNumber: meetingNumber,
+              userName: userName,
+              signature: signature,
+              apiKey: apiKey,
+              success: function (res) {
+                document.getElementById('container').innerText = 'Meeting loaded!';
 
+                setTimeout(function () {
+                  document.getElementById('navbar').classList.add('u-hidden');
+                }, 500);
+              },
+              error: function (res) {
+                document.getElementById('container').innerText = 'Error while trying to join. ' + res.errorMessage;
+              }
+            });
+          },
+          error: function () {
+            document.getElementById('container').innerText = 'Error while loading Zoom player.';
+          }
+      });
+    })
+    .error(function (err) {
+      document.getElementById('container').innerText = 'Error while generating Zoom player signature.';
+      console.log(err.responseJSON.error.code);
     });
 
-  })();
+})(jQuery, URI);
