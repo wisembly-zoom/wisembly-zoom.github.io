@@ -27,8 +27,8 @@
     $.post(apiEndpoint, {
         number: meetingNumber,
         role: search.role || 0
-      })
-      .success(function (data) {
+      },
+      function (data) {
         if (!data.success) {
           document.getElementById('container').innerText = 'An error occured while trying to connect.';
           return;
@@ -37,39 +37,56 @@
         document.getElementById('container').innerText = 'Meeting found! Loading Zoom web player...';
 
         var apiKey = data.success.data.api_key;
-        var signature = data.success.data.signature;
+        // var signature = data.success.data.signature;
+        var signature = ZoomMtg.generateSignature({
+          meetingNumber: meetingNumber,
+          apiKey: apiKey,
+          apiSecret: data.success.data.secret,
+          role: role,
+          success: function (res) {
+            console.log(res.result);
+          }
+        });
+        console.log(signature);
+        console.log(data.success.data.signature);
+        console.log(signature === data.success.data.signature);
 
         ZoomMtg.init({
-            leaveUrl: leaveUrl,
-            isSupportAV: true,
-            success: function () {
-              ZoomMtg.join({
-                meetingNumber: meetingNumber,
-                userName: userName,
-                signature: signature,
-                apiKey: apiKey,
-                success: function (res) {
-                  document.getElementById('container').innerText = 'Meeting loaded!';
+          leaveUrl: leaveUrl,
+          isSupportAV: true,
+          success: function () {
+            console.log('sbla');
+            ZoomMtg.join({
+              meetingNumber: meetingNumber,
+              userName: userName,
+              password: ``,
+              signature: signature,
+              apiKey: apiKey,
+              success: function (res) {
+                console.log(res);
+                document.getElementById('container').innerText = 'Meeting loaded!';
 
-                  setTimeout(function () {
-                    document.getElementById('navbar').classList.add('u-hidden');
-                  }, 500);
-                },
-                error: function (res) {
-                  document.getElementById('container').innerText = 'Error while trying to join. ' + res.errorMessage;
-                }
-              });
-            },
-            error: function () {
-              document.getElementById('container').innerText = 'Error while loading Zoom player.';
-            }
-        });
+                setTimeout(function () {
+                  document.getElementById('navbar').classList.add('u-hidden');
+                }, 500);
+              },
+              error: function (res) {
+                console.log(res);
+                document.getElementById('container').innerText = 'Error while trying to join. ' + res.errorMessage;
+              }
+            });
+          },
+          error: function (res) {
+            console.log(res);
+            document.getElementById('container').innerText = 'Error while loading Zoom player.';
+          }
+        })
       })
-      .error(function (err) {
+      .fail(function (err) {
         document.getElementById('container').innerText = 'Error while generating Zoom player signature.';
         console.log(err.responseJSON.error.code);
       });
-  }
+  };
 
   join();
 
