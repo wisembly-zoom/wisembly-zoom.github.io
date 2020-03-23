@@ -1,6 +1,9 @@
 (function ($, URI) {
 
   var join = function () {
+    ZoomMtg.preLoadWasm();
+    ZoomMtg.prepareJssdk();
+
     var leaveUrl = 'https://wisembly.com/produit/reunions-a-distance.html';
 
     var apiEndpoints = {
@@ -37,47 +40,33 @@
         document.getElementById('container').innerText = 'Meeting found! Loading Zoom web player...';
 
         var apiKey = data.success.data.api_key;
-        // var signature = data.success.data.signature;
-        var signature = ZoomMtg.generateSignature({
-          meetingNumber: meetingNumber,
-          apiKey: apiKey,
-          apiSecret: data.success.data.secret,
-          role: role,
-          success: function (res) {
-            console.log(res.result);
-          }
-        });
-        console.log(signature);
-        console.log(data.success.data.signature);
-        console.log(signature === data.success.data.signature);
+        var signature = data.success.data.signature;
 
         ZoomMtg.init({
           leaveUrl: leaveUrl,
           isSupportAV: true,
-          success: function () {
-            console.log('sbla');
+          disableJoinAudio: false,
+          success () {
             ZoomMtg.join({
               meetingNumber: meetingNumber,
               userName: userName,
-              password: ``,
+              userEmail: '',
+              passWord: '',
               signature: signature,
               apiKey: apiKey,
-              success: function (res) {
-                console.log(res);
+              success (res) {
                 document.getElementById('container').innerText = 'Meeting loaded!';
 
                 setTimeout(function () {
                   document.getElementById('navbar').classList.add('u-hidden');
                 }, 500);
               },
-              error: function (res) {
-                console.log(res);
+              error (res) {
                 document.getElementById('container').innerText = 'Error while trying to join. ' + res.errorMessage;
               }
             });
           },
-          error: function (res) {
-            console.log(res);
+          error (res) {
             document.getElementById('container').innerText = 'Error while loading Zoom player.';
           }
         })
