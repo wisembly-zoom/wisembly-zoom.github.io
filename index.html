@@ -2,15 +2,10 @@
 <head>
     <title>Zoom JSSDK 1.7.2</title>
     <meta charset="utf-8" />
-    <link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
-    <link type="text/css" rel="stylesheet" href="css/react-select.css"/>
+    <link type="text/css" rel="stylesheet" href="./css/bootstrap.css"/>
+    <link type="text/css" rel="stylesheet" href="./css/react-select.css"/>
     <meta name="format-detection" content="telephone=no">
-</head>
-<body>
     <style>
-        body {
-            padding-top: 50px;
-        }
         .container {
             color: #fff;
             font-size: 18px;
@@ -20,48 +15,48 @@
             display: none !important;
         }
 
-        #dialog-join,
+/*        #dialog-join,
         .diaout-layer {
             width: 100% !important;
             height: auto !important;
             min-width: 0 !important;
         }
-
         #dialog-join .tab {
             width: 40% !important;
             min-width: 50px !important;
         }
-
         #wc-footer .center {
             display: none !important;
         }
-
         #sv-active-speaker-view {
             display: flex;
             align-items: center;
+        }*/
+        footer button:not(.join-audio) {
+            display: none;
         }
-
     </style>
-
+</head>
+<body>
     <nav id="navbar"class="navbar navbar-inverse navbar-fixed-top">
         <div id="container" class="container">
             Loading your Zoom meeting...
         </div>
     </nav>
 
-    <script src="lib/react.min.js"></script>
-    <script src="lib/react-dom.min.js"></script>
-    <script src="lib/redux.min.js"></script>
-    <script src="lib/redux-thunk.min.js"></script>
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/lodash.min.js"></script>
-    <script src="lib/urijs.min.js"></script>
+    <script src="./lib/react.min.js"></script>
+    <script src="./lib/react-dom.min.js"></script>
+    <script src="./lib/redux.min.js"></script>
+    <script src="./lib/redux-thunk.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/lodash.min.js"></script>
+    <script src="./lib/urijs.min.js"></script>
 
-    <script src="lib/av/js_media.js"></script>
+    <!-- <script src="./lib/av/js_media.js"></script> -->
 
     <script src="https://source.zoom.us/zoom-meeting-1.7.2.min.js"></script>
 
-    <script src="js/preload.js"></script>
-    <script src="js/index.js"></script>
+    <!-- <script src="js/preload.js"></script> -->
+    <script src="./js/index.js"></script>
 </body>
 </html>

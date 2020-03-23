@@ -1,10 +1,11 @@
 (function ($, URI) {
 
-  var join = function () {
-    ZoomMtg.preLoadWasm();
-    ZoomMtg.prepareJssdk();
+  ZoomMtg.preLoadWasm();
+  ZoomMtg.prepareJssdk();
 
-    var leaveUrl = 'https://wisembly.com/produit/reunions-a-distance.html';
+  var join = function () {
+
+    var leaveUrl = 'https://wisembly.github.io/wisembly-zoom/end.html';
 
     var apiEndpoints = {
       prod: 'https://api.wisembly.com/core/zoom',
@@ -42,16 +43,17 @@
         var apiKey = data.success.data.api_key;
         var signature = data.success.data.signature;
 
+        console.log('init');
         ZoomMtg.init({
           leaveUrl: leaveUrl,
-          isSupportAV: true,
+          isSupportAV: search.onedir ? false : true,
           disableJoinAudio: false,
           success () {
             ZoomMtg.join({
               meetingNumber: meetingNumber,
               userName: userName,
-              userEmail: '',
-              passWord: '',
+              userEmail: search.email || '',
+              passWord: search.password || '',
               signature: signature,
               apiKey: apiKey,
               success (res) {
